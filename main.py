@@ -18,7 +18,12 @@ LINE = "The rollback failed because the last good deploy was broken too \u2014 w
 
 
 def main():
+    # An empty MAKEFUN_OUTPUT_DIR (e.g. exported but unset by a harness)
+    # would make os.makedirs("") raise FileNotFoundError, so fall back
+    # to the default instead of crashing on a blank value.
     out_dir = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
+    if not out_dir.strip():
+        out_dir = "/output"
     os.makedirs(out_dir, exist_ok=True)
     with open(os.path.join(out_dir, "entry.txt"), "w", encoding="utf-8", newline="") as f:
         f.write(LINE)
